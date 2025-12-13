@@ -5,7 +5,10 @@ import com.example.IPS.IPS.dto.DailyTypeSummary;
 import com.example.IPS.IPS.dto.TransactionDTO;
 import com.example.IPS.IPS.entity.Transactions;
 import com.example.IPS.IPS.service.TransactionService;
+<<<<<<< HEAD
 import org.springframework.data.domain.Page;
+=======
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +22,19 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
+<<<<<<< HEAD
 
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
     //    get all failures
+=======
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+//    get all failures
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
     @GetMapping("/failures")
     public ResponseEntity<List<Transactions>> getALlTransactionfailures() {
         return ResponseEntity.ok(transactionService.getAllTransactionsFailures());
@@ -37,7 +47,10 @@ public class TransactionController {
 
         return ResponseEntity.ok(transactionService.getDailySummary(date));
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
     //    get list of failed transactions by date
     @GetMapping("/daily/failed-transactions")
     public ResponseEntity<List<Transactions>> getDailyFailedTransactions(
@@ -63,11 +76,16 @@ public class TransactionController {
     }
 
 
+<<<<<<< HEAD
     // get single transaaction by id
+=======
+// get single transaaction by id
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
     @GetMapping("/{id}")
     public ResponseEntity<Transactions> getTransactionById(@PathVariable String id) {
         return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
+<<<<<<< HEAD
 
     //    get transactions by date range
     @GetMapping("/range")
@@ -78,6 +96,17 @@ public class TransactionController {
         List<Transactions> transactions = transactionService.getTransactionsByDateRange(startDate, endDate);
         return ResponseEntity.ok(transactions);
     }
+=======
+//    get transactions by date range
+@GetMapping("/range")
+public ResponseEntity<List<Transactions>> getAllTransactionsByDateRange(
+        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+    List<Transactions> transactions = transactionService.getTransactionsByDateRange(startDate, endDate);
+    return ResponseEntity.ok(transactions);
+}
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 
     //    get transactions summary by date range
     @GetMapping("/summary/range")
@@ -94,6 +123,7 @@ public class TransactionController {
 //    get general summary
 //    get range by type
 
+<<<<<<< HEAD
     //get all transaction failed and success
     @GetMapping("/all")
     public ResponseEntity<Page<Transactions>> findAllTransactions(
@@ -104,6 +134,12 @@ public class TransactionController {
                 transactionService.getAllTransactions(page, size)
         );
     }
+=======
+
+
+
+
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 
 
 }

@@ -12,8 +12,13 @@ public interface TransactionsRepo extends JpaRepository<Transactions, Long> {
     List<Transactions> findByTimestampBetween(LocalDateTime start, LocalDateTime end);
 
     List<Transactions> findByStatus(String status);
+<<<<<<< HEAD
 
     Transactions findByTransactionId(String id);
 
 
+=======
+    Transactions findByTransactionId(String id);
+
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 }

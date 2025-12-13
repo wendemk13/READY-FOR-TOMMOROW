@@ -11,18 +11,25 @@ import com.example.IPS.IPS.repository.TransactionsRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+<<<<<<< HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+=======
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+=======
+import java.util.*;
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 import java.util.stream.Collectors;
 
 @Transactional
@@ -48,6 +55,7 @@ public class TransactionService {
 
     }
 
+<<<<<<< HEAD
     public Page<Transactions> getAllTransactions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return transactionsRepo.findAll(pageable);
@@ -64,12 +72,27 @@ public class TransactionService {
         return transaction;
     }
 
+=======
+public List<Transactions> getAllTransactionsFailures() {
+        return transactionsRepo.findByStatus("FAILURE");
+}
+
+
+public Transactions getTransactionById(String id) {
+    Transactions transaction = transactionsRepo.findByTransactionId(id);
+
+        return transaction;
+}
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
     public List<Transactions> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX);
         return transactionsRepo.findByTimestampBetween(start, end);
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
     public List<DailySummary> getDailySummaryByDateRange(LocalDate startDate, LocalDate endDate) {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX);
@@ -100,7 +123,10 @@ public class TransactionService {
         summaries.sort(Comparator.comparing(DailySummary::date));
         return summaries;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
     public DailyTypeSummary getDailySummary(LocalDate date) {
 
         LocalDateTime startOfDay = date.atStartOfDay();
