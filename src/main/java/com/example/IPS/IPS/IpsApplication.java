@@ -10,6 +10,8 @@ public class IpsApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(IpsApplication.class, args);
+        System.out.println("time is : " + java.time.LocalDateTime.now());
+
     }
 
 }

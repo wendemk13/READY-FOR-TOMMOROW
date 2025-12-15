@@ -21,7 +21,6 @@ public class AlertingController {
     @PostMapping("/daily/alert")
     public ResponseEntity<TransactionStatsDTO> getDailyAlert(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-
         return ResponseEntity.ok(transactionService.getStatsByDate(date));
     }
 

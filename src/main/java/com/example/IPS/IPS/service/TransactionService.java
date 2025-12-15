@@ -1,9 +1,6 @@
 package com.example.IPS.IPS.service;
 
-import com.example.IPS.IPS.dto.DailySummary;
-import com.example.IPS.IPS.dto.DailyTypeSummary;
-import com.example.IPS.IPS.dto.TransactionDTO;
-import com.example.IPS.IPS.dto.TransactionStatsDTO;
+import com.example.IPS.IPS.dto.*;
 import com.example.IPS.IPS.entity.AlertLog;
 import com.example.IPS.IPS.entity.Transactions;
 import com.example.IPS.IPS.repository.AlertLogRepo;
@@ -11,30 +8,21 @@ import com.example.IPS.IPS.repository.TransactionsRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-<<<<<<< HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-=======
->>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-<<<<<<< HEAD
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-=======
 import java.util.*;
->>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
 import java.util.stream.Collectors;
 
 @Transactional
 @Service
 public class TransactionService {
+    private final String status = "FAILURE";
 
     private final TransactionsRepo transactionsRepo;
     private final AlertingServices alertingService;
@@ -55,14 +43,47 @@ public class TransactionService {
 
     }
 
-<<<<<<< HEAD
     public Page<Transactions> getAllTransactions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return transactionsRepo.findAll(pageable);
     }
 
-    public List<Transactions> getAllTransactionsFailures() {
-        return transactionsRepo.findByStatus("FAILURE");
+
+    public List<Transactions> getAllTransactionsFailures(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return transactionsRepo.findByStatusAndTimestampBetween(status, startOfDay, endOfDay);
+    }
+
+    public List<Transactions> getAllTransactionsFailuresByType(String type, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return transactionsRepo.findByTypeAndStatusAndTimestampBetween(type, status, startOfDay, endOfDay);
+    }
+
+    //getAllTransactionsFailuresSummaryByType
+    public TransactionsSummaryDTO getAllTransactionsFailuresSummaryByType(String type, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        // Fetch all transactions for that type/date
+        List<Transactions> allTransactions = transactionsRepo.findAllByTypeAndTimestampBetween(type, startOfDay, endOfDay);
+
+        long totalTransactions = allTransactions.size();
+
+        // Filter failed transactions
+        List<Transactions> failedTransactionsList = allTransactions.stream()
+                .filter(t -> t.getStatus().equalsIgnoreCase("FAILURE"))
+                .toList();
+
+        long failedTransactions = failedTransactionsList.size();
+        double failurePercentage = totalTransactions > 0 ? (failedTransactions * 100.0 / totalTransactions) : 0;
+
+        double totalFailedAmount = failedTransactionsList.stream()
+                .mapToDouble(Transactions::getAmount)
+                .sum();
+
+        return new TransactionsSummaryDTO(type, date, totalTransactions, failedTransactions, failurePercentage, totalFailedAmount);
     }
 
 
@@ -72,28 +93,51 @@ public class TransactionService {
         return transaction;
     }
 
-=======
-public List<Transactions> getAllTransactionsFailures() {
-        return transactionsRepo.findByStatus("FAILURE");
-}
-
-
-public Transactions getTransactionById(String id) {
-    Transactions transaction = transactionsRepo.findByTransactionId(id);
-
-        return transaction;
-}
->>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
-    public List<Transactions> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
+    public List<Transactions> getTransactionsByDateRange(String type, LocalDate startDate, LocalDate endDate) {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX);
-        return transactionsRepo.findByTimestampBetween(start, end);
+        return transactionsRepo.findAllByStatusAndTypeAndTimestampBetween(status,type, start, end);
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
-    public List<DailySummary> getDailySummaryByDateRange(LocalDate startDate, LocalDate endDate) {
+//    public List<DailySummary> getDailySummaryByDateRange(LocalDate startDate, LocalDate endDate) {
+//        LocalDateTime start = startDate.atStartOfDay();
+//        LocalDateTime end = endDate.atTime(LocalTime.MAX);
+//
+//        List<Transactions> transactions = transactionsRepo.findByTimestampBetween(start, end);
+//
+//        // Group transactions by date (sorted)
+//        Map<LocalDate, List<Transactions>> byDate = transactions.stream()
+//                .collect(Collectors.groupingBy(
+//                        t -> t.getTimestamp().toLocalDate(),
+//                        TreeMap::new, // keeps dates sorted
+//                        Collectors.toList()
+//                ));
+//
+//        List<DailySummary> summaries = new ArrayList<>();
+//        for (Map.Entry<LocalDate, List<Transactions>> entry : byDate.entrySet()) {
+//            LocalDate date = entry.getKey();
+//            List<Transactions> daily = entry.getValue();
+//
+//            // Filter failures once
+//            List<Transactions> failures = daily.stream()
+//                    .filter(t -> "FAILURE".equalsIgnoreCase(t.getStatus()))
+//                    .toList();
+//
+//            long totalFailures = failures.size();
+//            double totalAmount = failures.stream()
+//                    .mapToDouble(Transactions::getAmount)
+//                    .sum();
+//
+//            Map<String, Long> failureByType = failures.stream()
+//                    .collect(Collectors.groupingBy(Transactions::getType, Collectors.counting()));
+//
+//            summaries.add(new DailySummary(date, totalFailures, totalAmount, failureByType));
+//        }
+//
+//        return summaries; // already sorted by TreeMap
+//    }
+
+    public SummaryResponse getDailyAndAggregateSummary(LocalDate startDate, LocalDate endDate) {
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(LocalTime.MAX);
 
@@ -101,32 +145,47 @@ public Transactions getTransactionById(String id) {
 
         // Group transactions by date
         Map<LocalDate, List<Transactions>> byDate = transactions.stream()
-                .collect(Collectors.groupingBy(t -> t.getTimestamp().toLocalDate()));
+                .collect(Collectors.groupingBy(
+                        t -> t.getTimestamp().toLocalDate(),
+                        TreeMap::new,
+                        Collectors.toList()
+                ));
 
-        List<DailySummary> summaries = new ArrayList<>();
-        for (LocalDate date : byDate.keySet()) {
-            List<Transactions> daily = byDate.get(date);
-            long totalFailures = daily.stream().filter(t -> "FAILURE".equalsIgnoreCase(t.getStatus())).count();
-            double totalAmount = daily.stream()
-                    .filter(t -> "FAILURE".equalsIgnoreCase(t.getStatus()))
-                    .mapToDouble(Transactions::getAmount)
-                    .sum();
+        List<DailySummary> dailySummaries = new ArrayList<>();
 
-            Map<String, Long> failureByType = daily.stream()
+        long totalFailures = 0;
+        double totalAmount = 0;
+        Map<String, Long> aggregateFailureByType = new HashMap<>();
+
+        for (Map.Entry<LocalDate, List<Transactions>> entry : byDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<Transactions> daily = entry.getValue();
+
+            // Filter failures once
+            List<Transactions> failures = daily.stream()
                     .filter(t -> "FAILURE".equalsIgnoreCase(t.getStatus()))
+                    .toList();
+
+            long dailyFailures = failures.size();
+            double dailyAmount = failures.stream().mapToDouble(Transactions::getAmount).sum();
+
+            Map<String, Long> dailyFailureByType = failures.stream()
                     .collect(Collectors.groupingBy(Transactions::getType, Collectors.counting()));
 
-            summaries.add(new DailySummary(date, totalFailures, totalAmount, failureByType));
+            // Add to daily summaries
+            dailySummaries.add(new DailySummary(date, dailyFailures, dailyAmount, dailyFailureByType));
+
+            // Aggregate totals
+            totalFailures += dailyFailures;
+            totalAmount += dailyAmount;
+            dailyFailureByType.forEach((type, count) ->
+                    aggregateFailureByType.merge(type, count, Long::sum));
         }
 
-        // Sort by date
-        summaries.sort(Comparator.comparing(DailySummary::date));
-        return summaries;
+        return new SummaryResponse(dailySummaries, totalFailures, totalAmount, aggregateFailureByType);
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 9eb53bfe95b70f01f7a15309dfbe2cd42346c61b
+
     public DailyTypeSummary getDailySummary(LocalDate date) {
 
         LocalDateTime startOfDay = date.atStartOfDay();
@@ -176,6 +235,15 @@ public Transactions getTransactionById(String id) {
 
         // fetch all transactions of that type for the day
         return transactionsRepo.findByTimestampBetween(startOfDay, endOfDay);
+    }
+
+    public List<Transactions> getDailyFailedTransactionsByType(String type, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        // fetch all transactions of that type for the day
+//        return transactionsRepo.findAllByTypeAndTimestampBetween(type, startOfDay, endOfDay);
+        return transactionsRepo.findAllByStatusAndTypeAndTimestampBetween(status, type, startOfDay, endOfDay);
     }
 
 

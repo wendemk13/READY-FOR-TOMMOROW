@@ -10,24 +10,28 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UsersController {
-  private   UserServices userServices;
+    private final UserServices userServices;
+
     UsersController(UserServices userServices) {
         this.userServices = userServices;
     }
-//    get all
+
+    //    get all
     @GetMapping("")
-    public ResponseEntity<List<Users>> getAllUsers(){
+    public ResponseEntity<List<Users>> getAllUsers() {
 
         return ResponseEntity.ok(userServices.getAllUsers());
     }
-//    get by username
+
+    //    get by username
     @GetMapping("/{username}")
-    public ResponseEntity<Users> getUsersByUsername(@PathVariable String username){
+    public ResponseEntity<Users> getUsersByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userServices.getUserByUsername(username));
     }
-//    register
+
+    //    register
     @PostMapping("/register")
-    public ResponseEntity<Users> registerNewUser(@RequestBody Users user){
+    public ResponseEntity<Users> registerNewUser(@RequestBody Users user) {
         return ResponseEntity.ok(userServices.registerUsers(user));
     }
 }

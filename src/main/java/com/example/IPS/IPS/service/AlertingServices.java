@@ -2,6 +2,8 @@ package com.example.IPS.IPS.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AlertingServices {
 
+    private static final Logger logger = LoggerFactory.getLogger(AlertingServices.class);
     private final JavaMailSender mailSender;
 
     public void sendAlert(LocalDate date, long totalFailures, double failedAmount, double failurePercentage) {
@@ -29,7 +32,8 @@ public class AlertingServices {
 
 
         mailSender.send(message);
-        System.out.println("Warning Alert email sent!");
+        logger.info("IPS Alert email sent on {}: totalFailures={}, failedAmount={}, failurePercentage={}",
+                date, totalFailures, failedAmount, failurePercentage);
     }
 
 
